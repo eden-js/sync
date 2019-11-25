@@ -7,9 +7,17 @@ const EdenModel = require('model/public/js/model');
 
 // create model mixin
 module.exports = (mixIn) => {
+  // models
+  if (mixIn.__models) return;
+
   // set of models
   mixIn.__uuid = uuid();
   mixIn.__models = new Map();
+
+  // create unbound updated
+  const updated = () => {
+    mixIn.update();
+  };
 
   // unmount
   mixIn.on('unmount', () => {
@@ -22,7 +30,7 @@ module.exports = (mixIn) => {
       value.listener.remove(mixIn.__uuid);
 
       // On update
-      value.removeListener('update', mixIn.update);
+      value.removeListener('update', updated);
 
       // remove model
       mixIn.__models.delete(key);
@@ -50,7 +58,7 @@ module.exports = (mixIn) => {
     mixIn.__models.set(`${type}.${object.id}`, model);
 
     // On update
-    model.on('update', mixIn.update);
+    model.on('update', updated);
 
     // Return model
     return model;

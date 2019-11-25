@@ -79,15 +79,24 @@ class EdenModel extends Events {
    * Returns data key
    *
    * @param  {String} key
+   * @param  {*} default
    *
    * @return {*}
    */
-  get(key) {
+  get(key, d) {
     // Check key
     if (!key || !key.length) return this.__data;
 
     // Return this key
-    return dotProp.get(this.__data, key);
+    const got = dotProp.get(this.__data, key);
+
+    // check got
+    if (typeof got === 'undefined') {
+      return d;
+    }
+
+    // return got
+    return got;
   }
 
   /**
@@ -105,9 +114,13 @@ class EdenModel extends Events {
 
     // emit key
     this.emit(key);
+    this.emit('update');
 
     // emit base key
-    if (key !== key.split('.')[0]) this.emit(key.split('.')[0]);
+    if (key !== key.split('.')[0]) {
+      // emit base
+      this.emit(key.split('.')[0]);
+    }
 
     // fetch to backend
     if (persist) eden.router.post(`/api/${this.__type}/${this.__id}/update`, {
