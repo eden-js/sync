@@ -16,7 +16,7 @@ module.exports = (mixIn) => {
 
   // create unbound updated
   const updated = () => {
-    mixIn.update();
+    mixIn.safeUpdate();
   };
 
   // unmount
@@ -39,23 +39,28 @@ module.exports = (mixIn) => {
 
   // create model function
   mixIn.model = (type, object) => {
+    // check model listen exists already
+    if (mixIn.__models.has(`${type}.${(object._id || object.id)}`)) {
+      return mixIn.__models.get(`${type}.${(object._id || object.id)}`);
+    }
+
     // check uuid
     if (!mixIn.__uuid) mixIn.__uuid = uuid();
 
     // Create model
     if (!mixIn.eden.frontend) {
       // create model
-      const model = new EdenModel(type, object.id, object);
+      const model = new EdenModel(type, (object._id || object.id), object);
 
       // Return model
       return model;
     }
 
     // return model
-    const model = eden.model.add(type, object.id, object, mixIn.__uuid);
+    const model = eden.model.add(type, (object._id || object.id), object, mixIn.__uuid);
 
     // add to models
-    mixIn.__models.set(`${type}.${object.id}`, model);
+    mixIn.__models.set(`${type}.${(object._id || object.id)}`, model);
 
     // On update
     model.on('update', updated);

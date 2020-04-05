@@ -15,49 +15,48 @@ class ModelHelper extends helper {
     super();
 
     // Bind methods
-    this.deafen = this.deafen.bind(this);
-    this.listen = this.listen.bind(this);
+    this.addListener = this.addListener.bind(this);
+    this.removeListener = this.removeListener.bind(this);
+
+    // create emitter
+    this.emitter = this.eden.thread(['back', 'model']);
   }
 
   /**
-   * Live listens to model
+   * add listener
    *
-   * @param  {String}  sessionID
-   * @param  {*}       listenModel
-   * @param  {String}  listenID
-   *
-   * @returns {Promise}
+   * @param {*} on 
+   * @param {*} opts 
    */
-  deafen(sessionID, listenModel, listenID, user) {
+  addListener(on, opts) {
     // check model
-    if (!listenModel || !listenModel.get('_id')) return;
+    if (!on || !on.get('_id')) return;
 
     // Call local
-    return this.eden.thread(['back', 'model']).call('model.deafen', {
-      sessionID,
-      userID : user ? user.get('_id') : null,
-    }, listenModel.constructor.name.toLowerCase(), listenModel.get('_id').toString(), listenID);
+    return this.emitter.call('model.listen', {
+      userID    : opts.user ? opts.user.get('_id') : null,
+      atomic    : !!opts.atomic,
+      listenID  : opts.listenID,
+      sessionID : opts.sessionID,
+    }, on.constructor.name.toLowerCase(), on.get('_id').toString());
   }
 
   /**
-   * Live listens to model
+   * add listener
    *
-   * @param  {String}  sessionID
-   * @param  {*}       listenModel
-   * @param  {String}  listenID
-   * @param  {Boolean} atomic
-   *
-   * @returns {Promise}
+   * @param {*} on 
+   * @param {*} opts 
    */
-  listen(sessionID, listenModel, listenID, atomic = false, user) {
+  removeListener(on, opts) {
     // check model
-    if (!listenModel || !listenModel.get('_id')) return;
+    if (!on || !on.get('_id')) return;
 
     // Call local
-    return this.eden.thread(['back', 'model']).call('model.listen', {
-      sessionID,
-      userID : user ? user.get('_id') : null,
-    }, listenModel.constructor.name.toLowerCase(), listenModel.get('_id').toString(), listenID, atomic);
+    return this.emitter.call('model.deafen', {
+      userID    : opts.user ? opts.user.get('_id') : null,
+      listenID  : opts.listenID,
+      sessionID : opts.sessionID,
+    }, on.constructor.name.toLowerCase(), on.get('_id').toString());
   }
 }
 

@@ -38,8 +38,8 @@ class ModelDaemon extends Daemon {
    */
   build() {
     // Add endpoint for listen
-    this.eden.endpoint('model.listen', this.onSubscribe, true);
-    this.eden.endpoint('model.deafen', this.onUnsubscribe, true);
+    this.eden.endpoint('model.listen', this.onSubscribe);
+    this.eden.endpoint('model.deafen', this.onUnsubscribe);
 
     // Add listeners for events
     this.eden.on('model.save', this.onSave, true);
@@ -88,7 +88,7 @@ class ModelDaemon extends Daemon {
     // Loop listeners
     listeners.forEach(async (listener) => {
       // check atomic
-      if (sent.includes(listener.session)) return;
+      if (sent.includes(listener.sessionID)) return;
 
       // atomic
       const atomic = {};
@@ -109,27 +109,26 @@ class ModelDaemon extends Daemon {
       await this.eden.hook(`model.${opts.model.toLowerCase()}.sync.sanitise`, { opts, sanitised, atomic, listener, model : gotModel });
 
       // send atomic update
-      socket.session(listener.session, `model.update.${opts.model.toLowerCase()}.${opts.id}`, listener.atomic ? atomic : sanitised);
+      socket.session(listener.sessionID, `model.update.${opts.model.toLowerCase()}.${opts.id}`, listener.atomic ? atomic : sanitised);
 
       // Push to sent
-      sent.push(listener.session);
+      sent.push(listener.sessionID);
     });
   }
 
   /**
-   * Listen to endpoint for live data
+   * on unsubscribe
    *
-   * @param  {String}  sessionID
-   * @param  {String}  type
-   * @param  {String}  id
-   * @param  {String}  listenID
+   * @param {*} param0 
+   * @param {*} type 
+   * @param {*} id 
    */
-  async onUnsubscribe(opts, type, id, listenID) {
+  async onUnsubscribe({ sessionID, listenID, userID, atomic }, type, id) {
     // Set model
     if (!this.models.has(type)) this.models.set(type, true);
 
     // Log to eden
-    this.logger.log('debug', `[removeListener] ${type} #${id} for ${opts.sessionID}`, {
+    this.logger.log('debug', `[removeListener] ${type} #${id} for ${sessionID}`, {
       class : this.constructor.name,
     });
 
@@ -142,7 +141,7 @@ class ModelDaemon extends Daemon {
     // Add sessionID to listeners
     listeners = listeners.filter((listener) => {
       // Return filtered
-      return listener.uuid !== listenID;
+      return listener.listenID !== listenID;
     });
 
     // Set to eden again
@@ -153,27 +152,18 @@ class ModelDaemon extends Daemon {
   }
 
   /**
-   * Listen to endpoint for live data
+   * on subscribe
    *
-   * @param  {String}  sessionID
-   * @param  {String}  type
-   * @param  {String}  id
-   * @param  {String}  listenID
-   * @param  {Boolean} atomic
+   * @param {*} param0 
+   * @param {*} type 
+   * @param {*} id 
    */
-  async onSubscribe(opts, type, id, listenID, atomic = false) {
+  async onSubscribe({ sessionID, listenID, userID, atomic }, type, id) {
     // Set model
     if (!this.models.has(type)) this.models.set(type, true);
 
-    // check atomic
-    if (typeof atomic !== 'boolean') {
-      // set vlaue
-      opts = atomic;
-      atomic = false;
-    }
-
     // Log to eden
-    this.logger.log('debug', `[listen] ${type} #${id} for ${opts.sessionID}`, {
+    this.logger.log('debug', `[listen] ${type} #${id} for ${sessionID}`, {
       class : this.constructor.name,
     });
 
@@ -186,7 +176,7 @@ class ModelDaemon extends Daemon {
     // Check found
     const found = listeners.find((listener) => {
       // Return filtered
-      return listener.session === opts.sessionID && listener.uuid === listenID;
+      return listener.sessionID === sessionID && listener.listenID === listenID;
     });
 
     // Add sessionID to listeners
@@ -196,11 +186,12 @@ class ModelDaemon extends Daemon {
     } else {
       // Push listener
       listeners.push({
-        ...opts,
-
+        type,
+        userID,
         atomic,
-        uuid : listenID,
-        last : new Date(),
+        listenID,
+        sessionID,
+        created_at : new Date(),
       });
     }
 
