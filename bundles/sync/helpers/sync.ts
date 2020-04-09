@@ -1,12 +1,12 @@
 // Require helper
-const helper = require('helper');
+import Helper from 'helper';
 
 /**
  * Create model helper
  *
  * @extends helper
  */
-class ModelHelper extends helper {
+class ModelHelper extends Helper {
   /**
    * Construct model helper
    */
@@ -65,4 +65,7 @@ class ModelHelper extends helper {
  *
  * @type {ModelHelper}
  */
-module.exports = new ModelHelper();
+const built = new ModelHelper();
+
+// export built
+export default built;

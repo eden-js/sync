@@ -3,7 +3,7 @@
 const uuid = require('uuid');
 
 // Require live model
-const EdenModel = require('model/public/js/model');
+const EdenModel = require('sync/public/js/model');
 
 // create model mixin
 module.exports = (mixIn) => {

@@ -1,2 +1,2 @@
 // Export Socket helper instance
-exports = module.exports = helper('model');
+exports = module.exports = helper('sync');

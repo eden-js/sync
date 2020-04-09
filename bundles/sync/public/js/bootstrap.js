@@ -4,7 +4,7 @@ const Events = require('events');
 
 // require local dependencies
 const EdenModel = require('./model');
-const Collection = require('model/utils/collection');
+const Collection = require('sync/utils/collection');
 
 /**
  * Create live model class
