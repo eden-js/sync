@@ -39,6 +39,12 @@ module.exports = (mixIn) => {
 
   // create model function
   mixIn.model = (type, object) => {
+    // check id
+    if (!object._id || object.id) {
+      // new model
+      return new EdenModel(type, (object._id || object.id), object);
+    }
+
     // check model listen exists already
     if (mixIn.__models.has(`${type}.${(object._id || object.id)}`)) {
       return mixIn.__models.get(`${type}.${(object._id || object.id)}`);

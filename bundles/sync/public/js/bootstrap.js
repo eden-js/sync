@@ -48,6 +48,9 @@ class ModelStore extends Events {
       this.__models.set(type, new Map());
     }
 
+    // check id
+    if (!id) return new EdenModel(type, id, opts || {});
+
     // set id
     if (!id || !this.__models.get(type).has(id)) {
       // alter model
