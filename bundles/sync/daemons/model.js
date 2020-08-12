@@ -65,6 +65,9 @@ class ModelDaemon extends Daemon {
     // Load by id
     const gotModel = await ModelClass.findById(opts.id);
 
+    // check model
+    if (!gotModel) return;
+
     // check should emit update
     if (gotModel.hasUpdated && !await gotModel.hasUpdated(opts.updates)) return;
 
