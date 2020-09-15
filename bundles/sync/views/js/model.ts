@@ -1,12 +1,10 @@
 
 // require uuid
-const uuid = require('uuid');
-
-// Require live model
-const EdenModel = require('sync/public/js/model');
+import uuid from 'shortid';
+import EdenModel from 'sync/public/js/model';
 
 // create model mixin
-module.exports = (mixIn) => {
+export default (mixIn) => {
   // models
   if (mixIn.__models) return;
 

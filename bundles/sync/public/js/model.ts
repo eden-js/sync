@@ -1,14 +1,14 @@
 // Require dependencies
-const uuid    = require('uuid');
-const Events  = require('events');
-const dotProp = require('dot-prop');
+import uuid    from 'shortid';
+import Events  from 'events';
+import dotProp from 'dot-prop';
 
 /**
  * Create live model class
  *
  * @extends events
  */
-class EdenModel extends Events {
+export default class EdenModel extends Events {
   /**
    * Construct model class
    *
@@ -337,10 +337,3 @@ class EdenModel extends Events {
     }
   }
 }
-
-/**
- * Export live model class
- *
- * @type {EdenModel}
- */
-module.exports = EdenModel;

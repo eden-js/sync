@@ -1,5 +1,5 @@
 // Require daemon
-const Daemon = require('daemon');
+import Daemon from 'daemon';
 
 // Require helpers
 const socket = helper('socket');
@@ -7,12 +7,9 @@ const socket = helper('socket');
 /**
  * Create live daemon
  *
- * @cluster back
- * @cluster model
- *
- * @extends daemon
+ * @cluster all
  */
-class ModelDaemon extends Daemon {
+export default class ModelDaemon extends Daemon {
   /**
    * Constructor
    */
@@ -205,10 +202,3 @@ class ModelDaemon extends Daemon {
     unlock();
   }
 }
-
-/**
- * Build live daemon class
- *
- * @type {ModelDaemon}
- */
-module.exports = ModelDaemon;

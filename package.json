@@ -2,7 +2,9 @@
   "name": "@edenjs/sync",
   "description": "",
   "version": "1.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "shortid": "^2.2.15"
+  },
   "engines": {
     "node": ">= 8.0.0"
   },
@@ -22,10 +24,10 @@
   "homepage": "https://github.com/eden-js/sync#readme",
   "devDependencies": {
     "@edenjs/eslint-config-eden": "^2.0.14",
-    "eslint": "^5.15.1",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-plugin-import": "^2.16.0",
-    "eslint-plugin-jsx-a11y": "^6.2.1",
-    "eslint-plugin-react": "^7.12.4"
+    "eslint": "^7.9.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.20.6"
   }
 }
